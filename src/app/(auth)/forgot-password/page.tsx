@@ -1,10 +1,10 @@
-import { RegisterForm } from '@/components/auth/register-form';
+import { ForgotPasswordForm } from '@/components/auth/forgot-password-form';
 
-export default function RegisterPage() {
+export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/20 p-4">
       <div className="w-full max-w-md">
-        <RegisterForm />
+        <ForgotPasswordForm />
       </div>
     </div>
   );
