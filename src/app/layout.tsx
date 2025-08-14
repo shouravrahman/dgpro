@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'AI Product Creator',
+  title: 'DgPro',
   description:
     'AI-powered platform for creating and analyzing digital products',
 };
