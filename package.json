@@ -13,7 +13,17 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "db:migrate": "tsx src/scripts/migrate.ts",
+    "db:rollback": "tsx src/scripts/rollback.ts",
+    "db:status": "tsx src/scripts/db-status.ts",
+    "db:seed": "tsx src/scripts/seed.ts",
+    "db:reset": "tsx src/scripts/reset.ts",
+    "db:generate-types": "supabase gen types typescript --local > src/types/supabase.ts",
+    "db:apply-migrations": "tsx src/scripts/apply-migrations.ts",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:reset": "supabase db reset"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
@@ -21,6 +31,7 @@
     "@supabase/supabase-js": "^2.55.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.1",
     "lucide-react": "^0.539.0",
     "next": "15.4.6",
     "react": "19.1.0",
@@ -42,7 +53,9 @@
     "eslint-config-next": "15.4.6",
     "jsdom": "^26.1.0",
     "prettier": "^3.6.2",
+    "supabase": "^1.200.3",
     "tailwindcss": "^4",
+    "tsx": "^4.20.4",
     "typescript": "^5",
     "vitest": "^3.2.4"
   }
