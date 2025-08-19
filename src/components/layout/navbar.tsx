@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/lib/auth/context';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { cn } from '@/lib/utils';
 import {
   Menu,
@@ -27,17 +28,31 @@ const navigation = [
   { name: 'Contact', href: '/contact' },
 ];
 
-const userNavigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
-  { name: 'Creator', href: '/creator', icon: Sparkles },
-  { name: 'Trends', href: '/trends', icon: TrendingUp },
-  { name: 'Products', href: '/products', icon: ShoppingBag },
-];
+// Dynamic navigation based on user role
+const getNavigationForRole = (role: string | null) => {
+  const baseNav = [{ name: 'Dashboard', href: '/dashboard', icon: BarChart3 }];
+
+  if (role === 'creator') {
+    return [
+      ...baseNav,
+      { name: 'Creator Studio', href: '/creator', icon: Sparkles },
+      { name: 'Trends', href: '/trends', icon: TrendingUp },
+    ];
+  } else if (role === 'buyer') {
+    return [
+      ...baseNav,
+      { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
+      { name: 'Trends', href: '/trends', icon: TrendingUp },
+    ];
+  }
+
+  return baseNav;
+};
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut, loading, onboardingStatus } = useAuth();
   const pathname = usePathname();
 
   // Handle scroll effect
@@ -111,37 +126,40 @@ export function Navbar() {
             {/* User Navigation for Dashboard */}
             {isDashboard && user && (
               <>
-                {userNavigation.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = pathname === item.href;
+                {getNavigationForRole(onboardingStatus?.role || null).map(
+                  (item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
 
-                  return (
-                    <motion.div
-                      key={item.name}
-                      whileHover={{ y: -2 }}
-                      whileTap={{ y: 0 }}
-                    >
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          'flex items-center space-x-2 px-3 py-2 rounded-md transition-colors duration-200',
-                          isActive
-                            ? 'bg-primary/10 text-primary'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                        )}
+                    return (
+                      <motion.div
+                        key={item.name}
+                        whileHover={{ y: -2 }}
+                        whileTap={{ y: 0 }}
                       >
-                        <Icon className="w-4 h-4" />
-                        <span className="font-medium">{item.name}</span>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
+                        <Link
+                          href={item.href}
+                          className={cn(
+                            'flex items-center space-x-2 px-3 py-2 rounded-md transition-colors duration-200',
+                            isActive
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                          )}
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span className="font-medium">{item.name}</span>
+                        </Link>
+                      </motion.div>
+                    );
+                  }
+                )}
               </>
             )}
           </div>
 
           {/* Auth Buttons / User Menu */}
           <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
             {loading ? (
               <div className="w-8 h-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             ) : user ? (
@@ -288,32 +306,34 @@ export function Navbar() {
                 {/* User Navigation for Dashboard */}
                 {isDashboard && user && (
                   <div className="space-y-2">
-                    {userNavigation.map((item, index) => {
-                      const Icon = item.icon;
-                      const isActive = pathname === item.href;
+                    {getNavigationForRole(onboardingStatus?.role || null).map(
+                      (item, index) => {
+                        const Icon = item.icon;
+                        const isActive = pathname === item.href;
 
-                      return (
-                        <motion.div
-                          key={item.name}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                        >
-                          <Link
-                            href={item.href}
-                            className={cn(
-                              'flex items-center space-x-3 px-3 py-2 rounded-md transition-colors',
-                              isActive
-                                ? 'bg-primary/10 text-primary'
-                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                            )}
+                        return (
+                          <motion.div
+                            key={item.name}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
                           >
-                            <Icon className="w-5 h-5" />
-                            <span className="font-medium">{item.name}</span>
-                          </Link>
-                        </motion.div>
-                      );
-                    })}
+                            <Link
+                              href={item.href}
+                              className={cn(
+                                'flex items-center space-x-3 px-3 py-2 rounded-md transition-colors',
+                                isActive
+                                  ? 'bg-primary/10 text-primary'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                              )}
+                            >
+                              <Icon className="w-5 h-5" />
+                              <span className="font-medium">{item.name}</span>
+                            </Link>
+                          </motion.div>
+                        );
+                      }
+                    )}
                   </div>
                 )}
 

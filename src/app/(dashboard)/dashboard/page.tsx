@@ -1,168 +1,268 @@
 'use client';
 
-// Dashboard Page
-// Protected dashboard page for authenticated users
-
-import { useAuth } from '@/lib/auth/context';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { useAuth, useRequireAuth } from '@/lib/auth/context';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
+import { LoadingSpinner } from '@/components/ui/loading-states';
 import { Button } from '@/components/ui/button';
-import { User, LogOut, Settings, Plus } from 'lucide-react';
+import { StatsCard } from '@/components/dashboard/stats-card';
+import { QuickActions } from '@/components/dashboard/quick-actions';
+import { RecentActivity } from '@/components/dashboard/recent-activity';
+import { TrendingInsights } from '@/components/dashboard/trending-insights';
+import {
+  Plus,
+  TrendingUp,
+  ShoppingBag,
+  DollarSign,
+  Eye,
+  Activity,
+  Star,
+  Zap,
+  Brain,
+} from 'lucide-react';
+
+// Mock data - replace with real data from your database
+const stats = [
+  {
+    title: 'Products Created',
+    value: '12',
+    change: '+2 this month',
+    trend: 'up',
+    icon: ShoppingBag,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-500/10',
+  },
+  {
+    title: 'Total Earnings',
+    value: '$2,847',
+    change: '+12% from last month',
+    trend: 'up',
+    icon: DollarSign,
+    color: 'text-green-600',
+    bgColor: 'bg-green-500/10',
+  },
+  {
+    title: 'Active Listings',
+    value: '8',
+    change: '2 pending review',
+    trend: 'neutral',
+    icon: Activity,
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-500/10',
+  },
+  {
+    title: 'Total Views',
+    value: '1,429',
+    change: '+5% this week',
+    trend: 'up',
+    icon: Eye,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-500/10',
+  },
+];
+
+const quickActions = [
+  {
+    title: 'Create New Product',
+    description: 'Start building your next digital product with AI assistance',
+    icon: Plus,
+    href: '/creator',
+    color: 'blue',
+    primary: true,
+    badge: 'Popular',
+  },
+  {
+    title: 'Explore Market Trends',
+    description: 'Discover trending products and market opportunities',
+    icon: TrendingUp,
+    href: '/trends',
+    color: 'green',
+  },
+  {
+    title: 'AI Product Analyzer',
+    description: 'Get AI insights on your product performance and optimization',
+    icon: Brain,
+    href: '/analyzer',
+    color: 'purple',
+    badge: 'New',
+  },
+];
+
+const recentActivity = [
+  {
+    id: '1',
+    type: 'product_created' as const,
+    title: 'Created "Social Media Templates Pack"',
+    description: 'New product added to your portfolio',
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+    icon: Plus,
+    color: 'green',
+    href: '/products/social-media-templates',
+    metadata: {
+      productName: 'Social Media Templates',
+      category: 'Design',
+    },
+  },
+  {
+    id: '2',
+    type: 'market_research' as const,
+    title: 'Market analysis completed',
+    description: 'AI found 3 trending opportunities in your niche',
+    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+    icon: TrendingUp,
+    color: 'blue',
+    href: '/trends',
+    metadata: {
+      category: 'UI/UX Design',
+    },
+  },
+  {
+    id: '3',
+    type: 'collaboration' as const,
+    title: 'New collaboration request',
+    description: 'Designer wants to collaborate on logo pack',
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+    icon: Star,
+    color: 'purple',
+    metadata: {
+      collaborator: 'Sarah Chen',
+      productName: 'Logo Pack Pro',
+    },
+  },
+  {
+    id: '4',
+    type: 'trend_analyzed' as const,
+    title: 'Trend analysis updated',
+    description: 'Website templates showing 127% growth this week',
+    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+    icon: Eye,
+    color: 'orange',
+    href: '/trends/website-templates',
+    metadata: {
+      category: 'Web Templates',
+    },
+  },
+];
+
+const trendingInsights = [
+  {
+    id: '1',
+    title: 'AI-Generated Content Tools',
+    category: 'Software',
+    trend: 'up' as const,
+    percentage: 127,
+    description:
+      'Demand for AI content creation tools has surged, with particular interest in writing assistants and image generators.',
+    timeframe: 'Last 30 days',
+    confidence: 'high' as const,
+    tags: ['AI', 'Content Creation', 'Writing', 'Design'],
+  },
+  {
+    id: '2',
+    title: 'Mobile App UI Kits',
+    category: 'Design',
+    trend: 'up' as const,
+    percentage: 89,
+    description:
+      'Mobile-first design resources are in high demand as businesses prioritize mobile experiences.',
+    timeframe: 'Last 14 days',
+    confidence: 'high' as const,
+    tags: ['Mobile', 'UI/UX', 'App Design', 'Templates'],
+  },
+  {
+    id: '3',
+    title: 'Notion Templates',
+    category: 'Productivity',
+    trend: 'stable' as const,
+    percentage: 12,
+    description:
+      'Productivity templates maintain steady demand with focus on business and personal organization.',
+    timeframe: 'Last 7 days',
+    confidence: 'medium' as const,
+    tags: ['Productivity', 'Organization', 'Business', 'Templates'],
+  },
+];
 
 export default function DashboardPage() {
-  const { user, signOut, loading } = useAuth();
+  const { user } = useAuth();
+  const { loading } = useRequireAuth();
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'Creator';
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
+    <DashboardLayout
+      title="Dashboard"
+      description="Welcome back! Here's what's happening with your products."
+      actions={
+        <Button asChild>
+          <Link href="/creator">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Product
+          </Link>
+        </Button>
+      }
+    >
+      <div className="space-y-8">
+        {/* Welcome Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-blue-500/10 rounded-2xl p-6 border"
+        >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold">AI Product Creator</h1>
+            <div>
+              <h2 className="text-2xl font-bold mb-2">
+                Welcome back, {firstName}! 👋
+              </h2>
+              <p className="text-muted-foreground">
+                Ready to create amazing digital products? Let&apos;s make today
+                productive.
+              </p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <User className="w-4 h-4" />
-                {user?.user_metadata?.full_name || user?.email}
+            <div className="hidden sm:block">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-purple-500 rounded-2xl flex items-center justify-center">
+                <Zap className="w-8 h-8 text-white" />
               </div>
-              <Button variant="outline" size="sm">
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </Button>
-              <Button variant="outline" size="sm" onClick={signOut}>
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign out
-              </Button>
             </div>
           </div>
+        </motion.div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, index) => (
+            <StatsCard
+              key={stat.title}
+              title={stat.title}
+              value={stat.value}
+              change={stat.change}
+              trend={stat.trend}
+              icon={stat.icon}
+              delay={index * 0.1}
+            />
+          ))}
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="space-y-8">
-          {/* Welcome Section */}
-          <div className="text-center space-y-4">
-            <h2 className="text-4xl font-bold tracking-tight">
-              Welcome back,{' '}
-              {user?.user_metadata?.full_name?.split(' ')[0] || 'Creator'}! 👋
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Ready to create amazing digital products? Let's get started with
-              your next big idea.
-            </p>
-          </div>
+        {/* Quick Actions */}
+        <QuickActions actions={quickActions} />
 
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div className="p-6 rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Plus className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold">Create Product</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Start building your next digital product with AI assistance
-                  </p>
-                </div>
-                <Button className="w-full">Get Started</Button>
-              </div>
-            </div>
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Activity */}
+          <RecentActivity activities={recentActivity} />
 
-            <div className="p-6 rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold">Market Trends</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Discover trending products and market opportunities
-                  </p>
-                </div>
-                <Button variant="outline" className="w-full">
-                  Explore Trends
-                </Button>
-              </div>
-            </div>
-
-            <div className="p-6 rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold">My Products</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Manage and track your existing digital products
-                  </p>
-                </div>
-                <Button variant="outline" className="w-full">
-                  View Products
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            <div className="p-4 rounded-lg border bg-card text-card-foreground">
-              <div className="text-2xl font-bold">0</div>
-              <div className="text-sm text-muted-foreground">
-                Products Created
-              </div>
-            </div>
-            <div className="p-4 rounded-lg border bg-card text-card-foreground">
-              <div className="text-2xl font-bold">$0</div>
-              <div className="text-sm text-muted-foreground">
-                Total Earnings
-              </div>
-            </div>
-            <div className="p-4 rounded-lg border bg-card text-card-foreground">
-              <div className="text-2xl font-bold">0</div>
-              <div className="text-sm text-muted-foreground">
-                Active Listings
-              </div>
-            </div>
-            <div className="p-4 rounded-lg border bg-card text-card-foreground">
-              <div className="text-2xl font-bold">0</div>
-              <div className="text-sm text-muted-foreground">Total Views</div>
-            </div>
-          </div>
+          {/* Trending Insights */}
+          <TrendingInsights insights={trendingInsights} />
         </div>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

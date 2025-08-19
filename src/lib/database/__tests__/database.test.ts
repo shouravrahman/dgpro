@@ -300,7 +300,7 @@ describe('DatabaseService', () => {
                     id: '1',
                     category: 'Templates',
                     trend_data: { growth_rate: 15.2 },
-                    predictions: { 6_month_growth: 18.5 },
+                    predictions: { six_month_growth: 18.5 },
                     confidence_score: 0.87
                 }
             ];
