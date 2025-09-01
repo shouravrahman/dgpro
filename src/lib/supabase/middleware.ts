@@ -43,11 +43,11 @@ export async function updateSession(request: NextRequest) {
     // Define public routes that don't require authentication
     const publicRoutes = [
         '/',
-        '/auth/login',
-        '/auth/register',
-        '/auth/forgot-password',
-        '/auth/reset-password',
-        '/auth/verify-email',
+        '/login',
+        '/register',
+        '/forgot-password',
+        '/reset-password',
+        '/verify-email',
         '/terms',
         '/privacy',
         '/about',
@@ -76,13 +76,13 @@ export async function updateSession(request: NextRequest) {
     // If user is not authenticated and trying to access protected route
     if (!user && isProtectedRoute) {
         const url = request.nextUrl.clone();
-        url.pathname = '/auth/login';
+        url.pathname = '/login';
         url.searchParams.set('redirectTo', pathname);
         return NextResponse.redirect(url);
     }
 
     // If user is authenticated and trying to access auth pages, redirect to dashboard
-    if (user && (pathname.startsWith('/auth/login') || pathname.startsWith('/auth/register'))) {
+    if (user && (pathname.startsWith('/login') || pathname.startsWith('/register'))) {
         const url = request.nextUrl.clone();
         url.pathname = '/dashboard';
         return NextResponse.redirect(url);

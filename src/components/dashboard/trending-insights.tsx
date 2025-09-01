@@ -1,15 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  ArrowUpRight,
-  Sparkles,
-} from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface TrendingInsight {
   id: string;
@@ -25,175 +19,118 @@ interface TrendingInsight {
 
 interface TrendingInsightsProps {
   insights: TrendingInsight[];
-  loading?: boolean;
 }
 
-export function TrendingInsights({
-  insights,
-  loading = false,
-}: TrendingInsightsProps) {
-  if (loading) {
-    return (
-      <div className="bg-card rounded-xl border p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="h-6 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-          <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-        </div>
+export function TrendingInsights({ insights }: TrendingInsightsProps) {
+  const getTrendIcon = (trend: 'up' | 'down' | 'stable') => {
+    switch (trend) {
+      case 'up':
+        return TrendingUp;
+      case 'down':
+        return TrendingDown;
+      case 'stable':
+        return Minus;
+    }
+  };
 
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="p-4 border rounded-lg animate-pulse">
-              <div className="flex items-start justify-between mb-3">
-                <div className="space-y-2 flex-1">
-                  <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded" />
-                  <div className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded" />
-                </div>
-                <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded" />
-              </div>
-              <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded mb-3" />
-              <div className="flex gap-2">
-                <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded" />
-                <div className="h-6 w-20 bg-gray-200 dark:bg-gray-700 rounded" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (insights.length === 0) {
-    return (
-      <div className="bg-card rounded-xl border p-6">
-        <h3 className="text-lg font-semibold mb-6">Trending Insights</h3>
-        <div className="text-center py-8">
-          <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-          <p className="text-muted-foreground">
-            No trending insights available
-          </p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Check back later for market trends and opportunities
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const getTrendColor = (trend: 'up' | 'down' | 'stable') => {
+    switch (trend) {
+      case 'up':
+        return 'text-green-600';
+      case 'down':
+        return 'text-red-600';
+      case 'stable':
+        return 'text-gray-600';
+    }
+  };
 
   return (
-    <div className="bg-card rounded-xl border p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-primary" />
-          Trending Insights
-        </h3>
-        <Link href="/trends">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            View All
-            <ArrowUpRight className="w-4 h-4" />
-          </Button>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.8 }}
+      className="bg-white dark:bg-gray-800 rounded-lg border p-6"
+    >
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold">Trending Insights</h3>
+        <Link href="/trends" className="text-sm text-primary hover:underline">
+          View all
         </Link>
       </div>
-
       <div className="space-y-4">
         {insights.map((insight, index) => {
-          const TrendIcon =
-            insight.trend === 'up'
-              ? TrendingUp
-              : insight.trend === 'down'
-                ? TrendingDown
-                : Minus;
-
-          const trendColor =
-            insight.trend === 'up'
-              ? 'text-green-600 dark:text-green-400'
-              : insight.trend === 'down'
-                ? 'text-red-600 dark:text-red-400'
-                : 'text-gray-600 dark:text-gray-400';
-
-          const confidenceColor =
-            insight.confidence === 'high'
-              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
-              : insight.confidence === 'medium'
-                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300'
-                : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
-
+          const TrendIcon = getTrendIcon(insight.trend);
           return (
             <motion.div
               key={insight.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="p-4 border rounded-lg hover:border-primary/20 transition-colors group"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: 0.9 + index * 0.1 }}
+              className="p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
             >
-              <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start justify-between mb-2">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                      {insight.title}
-                    </h4>
-                    <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+                    <h4 className="font-medium text-sm">{insight.title}</h4>
+                    <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
                       {insight.category}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    {insight.timeframe}
+                  <p className="text-xs text-muted-foreground mb-2">
+                    {insight.description}
                   </p>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`flex items-center gap-1 px-2 py-1 rounded-full ${
-                      insight.trend === 'up'
-                        ? 'bg-green-100 dark:bg-green-900/20'
-                        : insight.trend === 'down'
-                          ? 'bg-red-100 dark:bg-red-900/20'
-                          : 'bg-gray-100 dark:bg-gray-900/20'
-                    }`}
+                <div className="flex items-center gap-1 text-sm">
+                  <TrendIcon
+                    className={cn('w-4 h-4', getTrendColor(insight.trend))}
+                  />
+                  <span
+                    className={cn('font-medium', getTrendColor(insight.trend))}
                   >
-                    <TrendIcon className={`w-4 h-4 ${trendColor}`} />
-                    <span className={`text-sm font-medium ${trendColor}`}>
-                      {insight.percentage > 0 ? '+' : ''}
-                      {insight.percentage}%
-                    </span>
-                  </div>
+                    {insight.percentage > 0 ? '+' : ''}
+                    {insight.percentage}%
+                  </span>
                 </div>
               </div>
 
-              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-                {insight.description}
-              </p>
-
-              <div className="flex items-center justify-between">
-                <div className="flex flex-wrap gap-2">
-                  {insight.tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                  {insight.tags.length > 3 && (
-                    <span className="text-xs text-muted-foreground">
-                      +{insight.tags.length - 3} more
-                    </span>
-                  )}
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <span>{insight.timeframe}</span>
+                  <span
+                    className={cn(
+                      'px-2 py-1 rounded-full',
+                      insight.confidence === 'high' &&
+                        'bg-green-100 text-green-700 dark:bg-green-900/20',
+                      insight.confidence === 'medium' &&
+                        'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20',
+                      insight.confidence === 'low' &&
+                        'bg-red-100 text-red-700 dark:bg-red-900/20'
+                    )}
+                  >
+                    {insight.confidence} confidence
+                  </span>
                 </div>
+              </div>
 
-                <span
-                  className={`text-xs px-2 py-1 rounded-full ${confidenceColor}`}
-                >
-                  {insight.confidence} confidence
-                </span>
+              <div className="flex flex-wrap gap-1 mt-2">
+                {insight.tags.slice(0, 3).map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs px-2 py-1 bg-background border rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
+                {insight.tags.length > 3 && (
+                  <span className="text-xs px-2 py-1 bg-background border rounded-full">
+                    +{insight.tags.length - 3} more
+                  </span>
+                )}
               </div>
             </motion.div>
           );
         })}
       </div>
-    </div>
+    </motion.div>
   );
 }

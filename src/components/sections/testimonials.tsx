@@ -213,12 +213,17 @@ export function Testimonials() {
               </div>
             </div>
 
-            {/* Testimonials Grid */}
+            {/* Testimonials Grid with Enhanced Animation */}
             <div className="overflow-hidden">
               <motion.div
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{
-                  transform: `translateX(-${currentIndex * 100}%)`,
+                className="flex"
+                animate={{
+                  x: `-${currentIndex * 100}%`,
+                }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 30,
                 }}
               >
                 {Array.from(

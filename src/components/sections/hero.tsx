@@ -6,6 +6,11 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/auth/context';
 import { Button } from '@/components/ui/button';
 import {
+  ParticleBackground,
+  FloatingElements,
+} from '@/components/effects/ParticleBackground';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import {
   ArrowRight,
   Sparkles,
   TrendingUp,
@@ -13,6 +18,9 @@ import {
   Star,
   Play,
   BarChart3,
+  Brain,
+  Target,
+  Rocket,
 } from 'lucide-react';
 
 const stats = [
@@ -42,13 +50,21 @@ const features = [
 
 export function Hero() {
   const { user } = useAuth();
+  const { backgroundY, textY, opacity } = useScrollAnimation();
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20" />
+      {/* Particle Background */}
+      <ParticleBackground />
+      <FloatingElements />
 
-      {/* Animated Background Shapes */}
+      {/* Background Elements with Parallax */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20"
+        style={{ y: backgroundY }}
+      />
+
+      {/* Animated Background Shapes with Enhanced Effects */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{
@@ -74,12 +90,41 @@ export function Hero() {
           }}
           className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-blue-500/20 to-primary/20 rounded-full blur-3xl"
         />
+
+        {/* Additional 3D-like Elements */}
+        <motion.div
+          animate={{
+            rotate: [0, 180, 360],
+            scale: [0.8, 1.1, 0.8],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+          className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-cyan-500/15 to-blue-500/15 rounded-full blur-2xl"
+        />
+        <motion.div
+          animate={{
+            rotate: [180, 0, 180],
+            scale: [1, 0.9, 1],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+          className="absolute bottom-1/3 left-1/3 w-48 h-48 bg-gradient-to-br from-pink-500/15 to-purple-500/15 rounded-full blur-2xl"
+        />
       </div>
 
-      <div className="container mx-auto px-4 py-20 relative z-10">
+      <motion.div
+        className="container mx-auto px-4 py-20 relative z-10"
+        style={{ y: textY, opacity }}
+      >
         <div className="max-w-6xl mx-auto">
           {/* Main Hero Content */}
-          <div className="text-center spab-16">
+          <div className="text-center space-y-16">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -91,25 +136,46 @@ export function Hero() {
               <span>Trusted by 2,500+ creators worldwide</span>
             </motion.div>
 
-            {/* Main Headline */}
+            {/* Main Headline with Enhanced Animation */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="space-y-4"
+              className="space-y-6"
             >
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-                Create Digital Products
+              <motion.h1
+                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, delay: 0.3 }}
+              >
+                <motion.span
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                >
+                  Create Digital Products
+                </motion.span>
                 <br />
-                <span className="bg-gradient-to-r from-primary via-purple-500 to-blue-500 bg-clip-text text-transparent">
+                <motion.span
+                  className="bg-gradient-to-r from-primary via-purple-500 to-blue-500 bg-clip-text text-transparent"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
+                >
                   with AI Power
-                </span>
-              </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                </motion.span>
+              </motion.h1>
+              <motion.p
+                className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.9 }}
+              >
                 Transform your ideas into profitable digital products using
                 advanced AI analysis, market insights, and automated creation
                 tools.
-              </p>
+              </motion.p>
             </motion.div>
 
             {/* CTA Buttons */}
@@ -229,7 +295,7 @@ export function Hero() {
             })}
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Scroll Indicator */}
       <motion.div

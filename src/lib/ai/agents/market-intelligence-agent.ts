@@ -4,6 +4,7 @@
  */
 
 import { BaseAgent, AgentConfig, AgentContext, AgentResponse } from '../base-agent';
+import { getGeminiClient } from '../gemini-client';
 
 export interface MarketAnalysisInput {
     type: 'trend_analysis' | 'opportunity_finder' | 'competitive_analysis' | 'personalized_insights';

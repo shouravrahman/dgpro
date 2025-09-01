@@ -1,8 +1,27 @@
+'use client';
+
+import { useAuth, useRequireAuth } from '@/lib/auth/context';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
+import { LoadingSpinner } from '@/components/ui/loading-states';
+import { MarketIntelligenceDashboard } from '@/components/market-intelligence/market-intelligence-dashboard';
+
 export default function TrendsPage() {
+  const { loading } = useRequireAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen p-8">
-      <h1 className="text-3xl font-bold mb-8">Market Trends</h1>
-      <p className="text-gray-600">Trends analysis page placeholder</p>
-    </div>
+    <DashboardLayout
+      title="Market Intelligence"
+      description="AI-powered market insights and trending opportunities"
+    >
+      <MarketIntelligenceDashboard />
+    </DashboardLayout>
   );
 }

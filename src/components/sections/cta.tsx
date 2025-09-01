@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/auth/context';
 import { Button } from '@/components/ui/button';
+import { useConversionTracking } from '@/lib/analytics/conversion-tracking';
 import {
   ArrowRight,
   Sparkles,
@@ -51,6 +52,7 @@ const urgencyFactors = [
 
 export function CTA() {
   const { user } = useAuth();
+  const { trackCTAClick } = useConversionTracking();
   const [currentUrgency, setCurrentUrgency] = React.useState(0);
 
   // Rotate urgency messages
@@ -139,40 +141,100 @@ export function CTA() {
               automation.
             </p>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons with Enhanced Interactions */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
               {user ? (
                 <motion.div
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                  }}
                   whileTap={{ scale: 0.95 }}
+                  className="relative"
                 >
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-primary to-blue-500 rounded-lg blur-lg opacity-30"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      opacity: [0.3, 0.5, 0.3],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                  />
                   <Button
                     size="lg"
                     asChild
-                    className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-blue-500 hover:from-primary/90 hover:to-blue-500/90"
+                    className="relative text-lg px-8 py-6 bg-gradient-to-r from-primary to-blue-500 hover:from-primary/90 hover:to-blue-500/90"
                   >
                     <Link href="/dashboard">
-                      <Sparkles className="w-5 h-5 mr-2" />
+                      <motion.div
+                        animate={{ rotate: [0, 360] }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: 'linear',
+                        }}
+                      >
+                        <Sparkles className="w-5 h-5 mr-2" />
+                      </motion.div>
                       Go to Dashboard
-                      <ArrowRight className="w-5 h-5 ml-2" />
+                      <motion.div
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        <ArrowRight className="w-5 h-5 ml-2" />
+                      </motion.div>
                     </Link>
                   </Button>
                 </motion.div>
               ) : (
                 <>
                   <motion.div
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                    }}
                     whileTap={{ scale: 0.95 }}
+                    className="relative"
                   >
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-primary to-blue-500 rounded-lg blur-lg opacity-30"
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.3, 0.5, 0.3],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
+                    />
                     <Button
                       size="lg"
                       asChild
-                      className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-blue-500 hover:from-primary/90 hover:to-blue-500/90"
+                      className="relative text-lg px-8 py-6 bg-gradient-to-r from-primary to-blue-500 hover:from-primary/90 hover:to-blue-500/90"
                     >
-                      <Link href="/register">
-                        <Sparkles className="w-5 h-5 mr-2" />
+                      <Link href="/auth/register">
+                        <motion.div
+                          animate={{ rotate: [0, 360] }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'linear',
+                          }}
+                        >
+                          <Sparkles className="w-5 h-5 mr-2" />
+                        </motion.div>
                         Start Creating Free
-                        <ArrowRight className="w-5 h-5 ml-2" />
+                        <motion.div
+                          animate={{ x: [0, 5, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          <ArrowRight className="w-5 h-5 ml-2" />
+                        </motion.div>
                       </Link>
                     </Button>
                   </motion.div>

@@ -322,7 +322,7 @@ export function RegisterForm({ className, onSuccess }: RegisterFormProps) {
           <p className="text-sm text-muted-foreground">
             Already have an account?{' '}
             <Link
-              href="/auth/login"
+              href="/login"
               className="text-primary hover:underline font-medium"
             >
               Sign in

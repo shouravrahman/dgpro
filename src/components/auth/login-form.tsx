@@ -99,7 +99,7 @@ export function LoginForm({ className, onSuccess }: LoginFormProps) {
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
               <Link
-                href="/auth/forgot-password"
+                href="/forgot-password"
                 className="text-sm text-primary hover:underline"
               >
                 Forgot password?
@@ -229,7 +229,7 @@ export function LoginForm({ className, onSuccess }: LoginFormProps) {
           <p className="text-sm text-muted-foreground">
             Don't have an account?{' '}
             <Link
-              href="/auth/register"
+              href="/register"
               className="text-primary hover:underline font-medium"
             >
               Sign up
